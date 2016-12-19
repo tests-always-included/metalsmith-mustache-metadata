@@ -18,9 +18,9 @@ This plugin adds a bunch of properties to objects in order to assist you when wo
     {
         "module": "something",
         "rootPath": "../../",
-        "templates": [
-            "first",
-            "second"
+        "scripts": [
+            "js/first.js",
+            "js/second.js"
         ],
         "user": {
             "first": "Tyler"
@@ -33,6 +33,9 @@ Your template wants to use the `module` property and trigger behavior.
     {{#module}}
     <script src="{{rootPath}}js/super-library.js"></script>
     {{/module}}
+    {{#scripts}}
+    <script src="{{rootPath}}{{.}}</script>
+    {{/script}}
 
 Unfortunately, that does not work in Mustache templates because context is switched to the `module` property and you lose access to all things in the parent.  Fret no longer!  This plugin adds links throughout the metadata allowing you to determine if a value is set and also to go back to parents.  The structure will end up looking somewhat like this:
 
@@ -61,6 +64,9 @@ This allows you to use the following syntax in your templates.  You can also nav
     {{#module?}}
     <script src="{{rootPath}}js/super-library.js"></script>
     {{/module?}}
+    {{#scripts}}
+    <script src="{{_parent.rootPath}}{{.}}</script>
+    {{/script}}
 
 
 Installation
