@@ -95,6 +95,10 @@ describe("metalsmith-mustache-metadata", function () {
                 },
                 loop: {
                 },
+                loop2: {
+                    anotherObject: {
+                    }
+                },
                 propName: {
                     array: [],
                     emptyString: "",
@@ -117,7 +121,12 @@ describe("metalsmith-mustache-metadata", function () {
                     }
                 }
             };
+
+            // Look for self-referential things
             files.loop.myself = files.loop;
+
+            // Look for loops back to a parent
+            files.loop2.anotherObject.myself = files.loop2;
             runPlugin(files, {
                 match: "**/*"
             });
