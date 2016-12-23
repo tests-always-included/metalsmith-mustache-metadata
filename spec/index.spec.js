@@ -93,10 +93,16 @@ describe("metalsmith-mustache-metadata", function () {
                 buffer: {
                     contents: Buffer.from("test", "utf8")
                 },
-                loop: {
-                },
+                loop: {},
                 loop2: {
-                    anotherObject: {
+                    anotherObject: {}
+                },
+                linkingChild: {
+                    ancestry: {}
+                },
+                linkingParent: {
+                    ancestry: {
+                        children: []
                     }
                 },
                 propName: {
@@ -119,6 +125,10 @@ describe("metalsmith-mustache-metadata", function () {
                         one: "one",
                         two: "two"
                     }
+                },
+                safeTwice: {
+                    _parent: null,
+                    true: true
                 }
             };
 
@@ -127,6 +137,15 @@ describe("metalsmith-mustache-metadata", function () {
 
             // Look for loops back to a parent
             files.loop2.anotherObject.myself = files.loop2;
+
+            // Avoid scenarios where one fileObject can link to another.
+            files.linkingParent.ancestry.children.push(files.linkingChild);
+            files.linkingChild.ancestry.parent = files.linkingParent;
+
+            // Simulate running the plugin on `safeTwice`.
+            files.safeTwice["true?"] = files.safeTwice;
+
+            // Make the magic happen
             runPlugin(files, {
                 match: "**/*"
             });
@@ -138,6 +157,10 @@ describe("metalsmith-mustache-metadata", function () {
         it("avoids loops", function () {
             // Well, if it looped then this test would never execute!
             expect(files.loop.myself).toBe(files.loop);
+        });
+        it("makes sure each root file object has a null _parent", function () {
+            expect(files.linkingParent._parent).toBe(null);
+            expect(files.linkingChild._parent).toBe(null);
         });
         it("adds propName? for truthy", function () {
             expect(files.propName["array?"]).toBe(files.propName);
@@ -158,6 +181,11 @@ describe("metalsmith-mustache-metadata", function () {
             expect(files.parent.object["two?"]).toBe(files.parent.object);
         });
         it("adds _parent to Arrays", function () {
+            expect(files.parent.array._parent).toBe(files.parent);
+        });
+        it("has normal behavior if ran twice", function () {
+            expect(files.safeTwice["true?"]).toBe(files.safeTwice);
+            expect(files.safeTwice["true??"]).not.toBeDefined();
             expect(files.parent.array._parent).toBe(files.parent);
         });
     });
