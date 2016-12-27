@@ -50,32 +50,50 @@ describe("metalsmith-mustache-metadata", function () {
 
         files = {
             "folder/test.html": {
-                contents: ""
+                contents: ":: one ::"
             },
             "folder2/skip.css": {
-                contents: ""
+                contents: ":: two ::"
             },
             "another-test.htm": {
-                contents: ""
+                contents: ":: three ::"
             }
         };
         runPlugin(files);
         expect(files["folder/test.html"]["contents?"]).toEqual(files["folder/test.html"]);
-        expect(files["another-test.htm"]["contents?"]).toEqual(files["folder/test.html"]);
+        expect(files["another-test.htm"]["contents?"]).toEqual(files["another-test.htm"]);
         expect(files["folder2/skip.css"]["contents?"]).not.toBeDefined();
+    });
+    it("sets up _parent and _parent?", function () {
+        var files;
+
+        files = {
+            "index.html": {
+                contents: ":: one ::",
+                "_parent?": true,
+                someObject: {
+                    "_parent?": true
+                }
+            }
+        };
+        runPlugin(files);
+        expect(files["index.html"]._parent).toBe(null);
+        expect(files["index.html"]["_parent?"]).not.toBeDefined();
+        expect(files["index.html"].someObject._parent).toBe(files["index.html"]);
+        expect(files["index.html"].someObject["_parent?"]).toBe(files["index.html"].someObject);
     });
     it("matches files when configured by options", function () {
         var files;
 
         files = {
             "folder/test.html": {
-                contents: ""
+                contents: ":: one ::"
             },
             "folder2/skip.css": {
-                contents: ""
+                contents: ":: two ::"
             },
             "another-test.htm": {
-                contents: ""
+                contents: ":: three ::"
             }
         };
         runPlugin(files, {

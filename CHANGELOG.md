@@ -2,6 +2,13 @@ Changelog
 =========
 
 
+1.0.3 - 2016-12-27
+------------------
+
+* Sets `_parent?`, which was omitted earlier.
+* Making sure that `_parent?` overrides any existing `_parent?` setting.
+
+
 1.0.2 - 2016-12-23
 ------------------
 
