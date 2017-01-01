@@ -80,7 +80,18 @@ Installation
 Usage
 -----
 
-Include this like you would include any other plugin.
+Include this like you would include any other plugin.  Here is the CLI example with the default options.  You don't need to specify any options unless you want to change their values.
+
+    {
+        "plugins": {
+            "metalsmith-mustache-metadata": {
+                "match": "**/*.{htm,html}",
+                "matchOptions": {}
+            }
+        }
+    }
+
+And here is the JavaScript example.  It also includes brief descriptions of each option.
 
     // Load this, just like other plugins.
     var mustacheMetadata = require("metalsmith-mustache-metadata");
@@ -92,7 +103,7 @@ Include this like you would include any other plugin.
     // the defaults.
     .use(mustacheMetadata({
         // Pattern of files to match
-        match: "**/*.htm,html",
+        match: "**/*.{htm,html}",
 
         // Options for matching files.  See minimatch.
         matchOptions: {}
