@@ -126,16 +126,16 @@ This uses Jasmine, Istanbul and ESLint for tests.
 This plugin is licensed under the [MIT License][License] with an additional non-advertising clause.  See the [full license text][License] for information.
 
 
-[codecov-badge]: https://codecov.io/github/tests-always-included/metalsmith-mustache-metadata/coverage.svg?branch=master
+[codecov-badge]: https://img.shields.io/codecov/c/github/tests-always-included/metalsmith-mustache-metadata/master.svg
 [codecov-link]: https://codecov.io/github/tests-always-included/metalsmith-mustache-metadata?branch=master
-[dependencies-badge]: https://david-dm.org/tests-always-included/metalsmith-mustache-metadata.png
+[dependencies-badge]: https://img.shields.io/david/tests-always-included/metalsmith-mustache-metadata.svg
 [dependencies-link]: https://david-dm.org/tests-always-included/metalsmith-mustache-metadata
-[devdependencies-badge]: https://david-dm.org/tests-always-included/metalsmith-mustache-metadata/dev-status.png
+[devdependencies-badge]: https://img.shields.io/david/dev/tests-always-included/metalsmith-mustache-metadata.svg
 [devdependencies-link]: https://david-dm.org/tests-always-included/metalsmith-mustache-metadata#info=devDependencies
 [License]: LICENSE.md
 [minimatch]: https://github.com/isaacs/minimatch
 [Mustache]: https://mustache.github.io/
-[npm-badge]: https://badge.fury.io/js/metalsmith-mustache-metadata.svg
+[npm-badge]: https://img.shields.io/npm/v/metalsmith-mustache-metadata.svg
 [npm-link]: https://npmjs.org/package/metalsmith-mustache-metadata
-[travis-badge]: https://secure.travis-ci.org/tests-always-included/metalsmith-mustache-metadata.png
+[travis-badge]: https://img.shields.io/travis/tests-always-included/metalsmith-mustache-metadata/master.svg
 [travis-link]: http://travis-ci.org/tests-always-included/metalsmith-mustache-metadata
