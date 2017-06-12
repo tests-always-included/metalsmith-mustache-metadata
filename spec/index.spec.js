@@ -11,7 +11,7 @@ plugin = require("..");
  *
  * @param {Object} [files={}]
  * @param {Object} [config]
- * @return {Object} modified files
+ * @return {Promise.<Object>} modified files
  */
 function runPlugin(files, config) {
     if (!files) {
@@ -19,36 +19,36 @@ function runPlugin(files, config) {
     }
 
     // Convert everything to Buffer objects
-    Object.keys(files).forEach(function (file) {
+    Object.keys(files).forEach((file) => {
         var contents;
 
         contents = files[file].contents || "";
         files[file].contents = Buffer.from(contents, "utf8");
     });
 
-    // The plugin ignores the metalsmith object and is synchronous,
-    // so the "done" callback doesn't need to do anything.
-    plugin(config)(files, {}, function () {});
-
-    // Convert everything to strings for easy comparisons
-    Object.keys(files).forEach(function (file) {
-        files[file].contents = files[file].contents.toString("utf8");
+    return new Promise((resolve, reject) => {
+        plugin(config)(files, {}, (err) => {
+            if (err) {
+                reject(err);
+            } else {
+                // Convert everything to strings for easy comparisons
+                Object.keys(files).forEach((file) => {
+                    files[file].contents = files[file].contents.toString("utf8");
+                });
+                resolve(files);
+            }
+        });
     });
-
-    return files;
 }
 
-describe("metalsmith-mustache-metadata", function () {
-    it("does not break with no files", function () {
-        var files;
-
-        files = runPlugin();
-        expect(files).toEqual({});
+describe("metalsmith-mustache-metadata", () => {
+    it("does not break with no files", () => {
+        return runPlugin().then((files) => {
+            expect(files).toEqual({});
+        });
     });
-    it("matches expected files by default", function () {
-        var files;
-
-        files = {
+    it("matches expected files by default", () => {
+        return runPlugin({
             "folder/test.html": {
                 contents: ":: one ::"
             },
@@ -58,16 +58,14 @@ describe("metalsmith-mustache-metadata", function () {
             "another-test.htm": {
                 contents: ":: three ::"
             }
-        };
-        runPlugin(files);
-        expect(files["folder/test.html"]["contents?"]).toEqual(files["folder/test.html"]);
-        expect(files["another-test.htm"]["contents?"]).toEqual(files["another-test.htm"]);
-        expect(files["folder2/skip.css"]["contents?"]).not.toBeDefined();
+        }).then((files) => {
+            expect(files["folder/test.html"]["contents?"]).toEqual(files["folder/test.html"]);
+            expect(files["another-test.htm"]["contents?"]).toEqual(files["another-test.htm"]);
+            expect(files["folder2/skip.css"]["contents?"]).not.toBeDefined();
+        });
     });
-    it("sets up _parent and _parent?", function () {
-        var files;
-
-        files = {
+    it("sets up _parent and _parent?", () => {
+        return runPlugin({
             "index.html": {
                 contents: ":: one ::",
                 "_parent?": true,
@@ -75,17 +73,15 @@ describe("metalsmith-mustache-metadata", function () {
                     "_parent?": true
                 }
             }
-        };
-        runPlugin(files);
-        expect(files["index.html"]._parent).toBe(null);
-        expect(files["index.html"]["_parent?"]).not.toBeDefined();
-        expect(files["index.html"].someObject._parent).toBe(files["index.html"]);
-        expect(files["index.html"].someObject["_parent?"]).toBe(files["index.html"].someObject);
+        }).then((files) => {
+            expect(files["index.html"]._parent).toBe(null);
+            expect(files["index.html"]["_parent?"]).not.toBeDefined();
+            expect(files["index.html"].someObject._parent).toBe(files["index.html"]);
+            expect(files["index.html"].someObject["_parent?"]).toBe(files["index.html"].someObject);
+        });
     });
-    it("matches files when configured by options", function () {
-        var files;
-
-        files = {
+    it("matches files when configured by options", () => {
+        return runPlugin({
             "folder/test.html": {
                 contents: ":: one ::"
             },
@@ -95,18 +91,18 @@ describe("metalsmith-mustache-metadata", function () {
             "another-test.htm": {
                 contents: ":: three ::"
             }
-        };
-        runPlugin(files, {
+        }, {
             match: "**/*.css"
+        }).then((files) => {
+            expect(files["folder/test.html"]["contents?"]).not.toBeDefined();
+            expect(files["another-test.htm"]["contents?"]).not.toBeDefined();
+            expect(files["folder2/skip.css"]["contents?"]).toEqual(files["folder2/skip.css"]);
         });
-        expect(files["folder/test.html"]["contents?"]).not.toBeDefined();
-        expect(files["another-test.htm"]["contents?"]).not.toBeDefined();
-        expect(files["folder2/skip.css"]["contents?"]).toEqual(files["folder2/skip.css"]);
     });
-    describe("object modification", function () {
+    describe("object modification", () => {
         var files;
 
-        beforeEach(function () {
+        beforeEach(() => {
             files = {
                 buffer: {
                     contents: Buffer.from("test", "utf8")
@@ -164,44 +160,44 @@ describe("metalsmith-mustache-metadata", function () {
             files.safeTwice["true?"] = files.safeTwice;
 
             // Make the magic happen
-            runPlugin(files, {
+            return runPlugin(files, {
                 match: "**/*"
             });
         });
-        it("skips delving into buffers", function () {
+        it("skips delving into buffers", () => {
             /* eslint no-underscore-dangle:off */
             expect(files.buffer.contents._parent).not.toBeDefined();
         });
-        it("avoids loops", function () {
+        it("avoids loops", () => {
             // Well, if it looped then this test would never execute!
             expect(files.loop.myself).toBe(files.loop);
         });
-        it("makes sure each root file object has a null _parent", function () {
+        it("makes sure each root file object has a null _parent", () => {
             expect(files.linkingParent._parent).toBe(null);
             expect(files.linkingChild._parent).toBe(null);
         });
-        it("adds propName? for truthy", function () {
+        it("adds propName? for truthy", () => {
             expect(files.propName["array?"]).toBe(files.propName);
             expect(files.propName["object?"]).toBe(files.propName);
             expect(files.propName["one?"]).toBe(files.propName);
             expect(files.propName["string?"]).toBe(files.propName);
             expect(files.propName["true?"]).toBe(files.propName);
         });
-        it("skips propName? for falsy", function () {
+        it("skips propName? for falsy", () => {
             expect(files.propName["emtpyString?"]).not.toBeDefined();
             expect(files.propName["false?"]).not.toBeDefined();
             expect(files.propName["null?"]).not.toBeDefined();
             expect(files.propName["zero?"]).not.toBeDefined();
         });
-        it("adds _parent and propName? to Objects", function () {
+        it("adds _parent and propName? to Objects", () => {
             expect(files.parent.object._parent).toBe(files.parent);
             expect(files.parent.object["one?"]).toBe(files.parent.object);
             expect(files.parent.object["two?"]).toBe(files.parent.object);
         });
-        it("adds _parent to Arrays", function () {
+        it("adds _parent to Arrays", () => {
             expect(files.parent.array._parent).toBe(files.parent);
         });
-        it("has normal behavior if ran twice", function () {
+        it("has normal behavior if ran twice", () => {
             expect(files.safeTwice["true?"]).toBe(files.safeTwice);
             expect(files.safeTwice["true??"]).not.toBeDefined();
             expect(files.parent.array._parent).toBe(files.parent);

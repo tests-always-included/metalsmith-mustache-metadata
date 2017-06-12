@@ -105,11 +105,86 @@ And here is the JavaScript example.  It also includes brief descriptions of each
         // Pattern of files to match
         match: "**/*.{htm,html}",
 
-        // Options for matching files.  See minimatch.
+        // Options for matching files.  See metalsmith-plugin-kit.
         matchOptions: {}
     })
 
-This uses [minimatch] to match files.  The `.matchOptions` object can be filled with options that the [minimatch] library uses.
+This relies on [metalsmith-plugin-kit] for matching files. It accepts options to affect the matching rules.
+
+
+API
+---
+
+<a name="module_metalsmith-mustache-metadata"></a>
+
+## metalsmith-mustache-metadata
+Metalsmith Mustache Metadata adds references in the metadata and additional
+properties that make it easier to work with Mustache templates. Typically
+you can not test for the presence or absense of a value in Mustache
+templates, which is by design. This allows you to cheat a bit and insert
+a minor amount of logic in templates, such as "does X exist".
+
+
+* [metalsmith-mustache-metadata](#module_metalsmith-mustache-metadata)
+    * [module.exports(options)](#exp_module_metalsmith-mustache-metadata--module.exports) ⇒ <code>function</code> ⏏
+        * [~update(thing, parent, forceUpdate)](#module_metalsmith-mustache-metadata--module.exports..update)
+        * [~metalsmithFile](#module_metalsmith-mustache-metadata--module.exports..metalsmithFile) : <code>Object</code>
+        * [~metalsmithFileCollection](#module_metalsmith-mustache-metadata--module.exports..metalsmithFileCollection) : <code>Object.&lt;string, module:metalsmith-mustache-metadata--module.exports~metalsmithFile&gt;</code>
+        * [~options](#module_metalsmith-mustache-metadata--module.exports..options) : <code>Object</code>
+
+<a name="exp_module_metalsmith-mustache-metadata--module.exports"></a>
+
+### module.exports(options) ⇒ <code>function</code> ⏏
+Factory to build middleware for Metalsmith.
+
+**Kind**: Exported function
+**Params**
+
+- options [<code>options</code>](#module_metalsmith-mustache-metadata--module.exports..options)
+
+<a name="module_metalsmith-mustache-metadata--module.exports..update"></a>
+
+#### module.exports~update(thing, parent, forceUpdate)
+Adds the _parent property to all objects.
+
+**Kind**: inner method of [<code>module.exports</code>](#exp_module_metalsmith-mustache-metadata--module.exports)
+**Params**
+
+- thing <code>Object</code> - Can also include Array objects.
+- parent <code>Object</code> | <code>null</code> - `null` if no parent.
+- forceUpdate <code>boolean</code> - Overwrites if _parent already exists
+
+<a name="module_metalsmith-mustache-metadata--module.exports..metalsmithFile"></a>
+
+#### module.exports~metalsmithFile : <code>Object</code>
+Metalsmith's file object.
+
+**Kind**: inner typedef of [<code>module.exports</code>](#exp_module_metalsmith-mustache-metadata--module.exports)
+**Properties**
+
+| Name | Type |
+| --- | --- |
+| contents | <code>Buffer</code> | 
+| mode | <code>string</code> | 
+
+<a name="module_metalsmith-mustache-metadata--module.exports..metalsmithFileCollection"></a>
+
+#### module.exports~metalsmithFileCollection : <code>Object.&lt;string, module:metalsmith-mustache-metadata--module.exports~metalsmithFile&gt;</code>
+Metalsmith's collection of files.
+
+**Kind**: inner typedef of [<code>module.exports</code>](#exp_module_metalsmith-mustache-metadata--module.exports)
+<a name="module_metalsmith-mustache-metadata--module.exports..options"></a>
+
+#### module.exports~options : <code>Object</code>
+Options that can be passed to the middleware factory.
+
+**Kind**: inner typedef of [<code>module.exports</code>](#exp_module_metalsmith-mustache-metadata--module.exports)
+**See**: [https://github.com/fidian/metalsmith-plugin-kit](https://github.com/fidian/metalsmith-plugin-kit)  
+**Params**
+
+- [match] <code>module:metalsmith-plugin-kit~matchList</code> - Defaults to all files
+- [matchOptions] <code>module:metalsmith-plugin-kit~matchOptions</code> <code> = {}</code> - Options for matching files.
+
 
 
 Development
@@ -133,7 +208,7 @@ This plugin is licensed under the [MIT License][License] with an additional non-
 [devdependencies-badge]: https://img.shields.io/david/dev/tests-always-included/metalsmith-mustache-metadata.svg
 [devdependencies-link]: https://david-dm.org/tests-always-included/metalsmith-mustache-metadata#info=devDependencies
 [License]: LICENSE.md
-[minimatch]: https://github.com/isaacs/minimatch
+[metalsmith-plugin-kit]: https://github.com/fidian/metalsmith-plugin-kit
 [Mustache]: https://mustache.github.io/
 [npm-badge]: https://img.shields.io/npm/v/metalsmith-mustache-metadata.svg
 [npm-link]: https://npmjs.org/package/metalsmith-mustache-metadata
